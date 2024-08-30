@@ -1,0 +1,22 @@
+---
+- hosts: loadbalancer_master
+  become: true
+  vars_files:
+    - vars/globalvars.yml
+    - vault.yml
+  pre_tasks:
+    - name: Install required packages
+      apt:
+        name: "{{ item }}"
+        state: present
+        update_cache: false  
+      with_items:
+        - acl
+        - postgresql-client
+        - python3-psycopg2
+
+  roles:
+    - postgres
+    - pdnsadmin
+    - powerdns
+    # - keepalived

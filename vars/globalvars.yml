@@ -1,0 +1,21 @@
+global_application_main: /opt/company
+global_postgres_admin_user: postgres
+global_loadbalancer_ip: "{{ hostvars['loadbalancer_cpi_01'].ansible_host }}"
+
+# PostgreSQL
+psql_postgres_datapath: /opt/company/postgres-data
+psql_postgres_port: 15432
+
+# PowerDNS
+pdns_postgres_user: powerdns
+pdns_postgres_host: "{{ global_loadbalancer_ip }}"
+pdns_postgres_port: "{{ psql_postgres_port }}"
+pdns_postgres_db: powerdns
+pdns_forward_zone: example.net
+pdns_reverse_lookup: 64.168.192
+
+# PowerDNS Admin UI
+pdnsa_postgres_user: asdasd
+pdnsa_postgres_host: "{{ global_loadbalancer_ip }}"
+pdnsa_postgres_port: "{{ psql_postgres_port }}"
+pdnsa_postgres_db: pda2

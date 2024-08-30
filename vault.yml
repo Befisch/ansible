@@ -1,0 +1,5 @@
+psql_postgres_password: 123test!
+pdnsa_postgres_userpass: testdb
+pdns_postgres_userpass: powerdnspass
+global_postgres_admin_pass: "{{ psql_postgres_password }}"
+pdns_api_key: superSecureAPIKey

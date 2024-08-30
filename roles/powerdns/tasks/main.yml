@@ -1,0 +1,61 @@
+---
+- name: Disable and stop systemd-resolved
+  systemd:
+    name: systemd-resolved
+    enabled: no
+    state: stopped
+
+- name: Copy reolver config
+  ansible.builtin.copy:
+    src: templates/resolv.conf
+    dest: "/etc/resolv.conf"
+
+- name: Create Postgresql Userdb
+  import_tasks: ../../tasks/postgres-userdb.yml
+  vars:
+    postgres_db: "{{ pdns_postgres_db }}"
+    postgres_user: "{{ pdns_postgres_user }}"
+    postgres_userpass: "{{ pdns_postgres_userpass }}"
+    postgres_host: "{{ pdns_postgres_host }}"
+    postgres_port: "{{ pdns_postgres_port }}"
+
+- name: Prepare Postgres Database
+  postgresql_query:
+    db: "{{ pdns_postgres_db }}"
+    login_user: "{{ pdns_postgres_user  }}"
+    login_password: "{{ pdns_postgres_userpass   }}"
+    login_host: "{{ pdns_postgres_host }}"
+    login_port: "{{ pdns_postgres_port }}"
+    query: "{{ lookup('file', 'templates/preparedb.sql') }}"
+
+- name: Install PowerDNS Server
+  apt:
+    name: pdns-server
+    state: present
+    update_cache: true
+
+- name: Install PowerDNS Server Backend Postgresql
+  apt:
+    name: pdns-backend-pgsql
+    state: present
+    update_cache: true
+
+- name: Install PowerDNS Recursor
+  apt:
+    name: pdns-recursor
+    state: present
+    update_cache: true
+
+- name: Copy PowerDNS Config
+  template:
+    src: templates/pdns.conf.j2
+    dest: "/etc/powerdns/pdns.conf"
+  notify: Restart PowerDNS service
+
+- name: Copy PowerDNS Recursor Config
+  template:
+    src: templates/recursor.conf.j2
+    dest: "/etc/powerdns/recursor.conf"
+  notify: Restart PowerDNS Recursor service
+
+

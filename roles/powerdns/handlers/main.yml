@@ -1,0 +1,10 @@
+---
+- name: Restart PowerDNS service
+  systemd:
+    name: pdns
+    state: restarted
+
+- name: Restart PowerDNS Recursor service
+  systemd:
+    name: pdns-recursor
+    state: restarted

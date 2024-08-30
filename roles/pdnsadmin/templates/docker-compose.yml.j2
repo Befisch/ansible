@@ -1,0 +1,16 @@
+version: '3.8'
+
+services:
+  pdnsadmin:
+    image: powerdnsadmin/pda-legacy:latest
+    container_name: pda
+    environment:
+      SQLALCHEMY_DATABASE_URI: postgresql://{{ pdnsa_postgres_user }}:{{ pdnsa_postgres_userpass }}@{{ pdnsa_postgres_host }}:{{ pdnsa_postgres_port }}/{{ pdnsa_postgres_db }}
+    ports:
+      - "{{ pdnsa_ui_port }}:80"  # Ersetze 5432 mit einem anderen Port, wenn nötig
+    networks:
+      - my_network
+
+networks:
+  my_network:
+    driver: bridge

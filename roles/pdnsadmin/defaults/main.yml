@@ -1,0 +1,12 @@
+---
+application_main: "{{ global_application_main | default('/opt/psql') }}"
+application_name: pdnsadmin
+service_name: pdnsadmin-docker
+
+pdnsa_postgres_userpass: password
+pdnsa_postgres_user: pda
+pdnsa_postgres_host: localhost
+pdnsa_postgres_port: 5432
+pdnsa_postgres_db: pda
+pdnsa_ui_port: 8083
+

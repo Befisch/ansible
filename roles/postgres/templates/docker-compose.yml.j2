@@ -1,0 +1,19 @@
+version: '3.8'
+
+services:
+  postgres:
+    image: postgres:15
+    container_name: postgres_db
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: "{{ psql_postgres_password }}"
+    ports:
+      - "{{ psql_postgres_port }}:5432"  # Ersetze 5432 mit einem anderen Port, wenn nötig
+    volumes:
+      - "{{ psql_postgres_datapath }}:/var/lib/postgresql/data"
+    networks:
+      - my_network
+
+networks:
+  my_network:
+    driver: bridge

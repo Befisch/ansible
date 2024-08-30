@@ -1,0 +1,44 @@
+---
+- name: Ensure the PostgreSQL database is present
+  postgresql_db:
+    name: "{{ postgres_db }}"
+    login_user: "{{ global_postgres_admin_user }}"
+    login_password: "{{ global_postgres_admin_pass }}"
+    login_host: "{{ postgres_host }}"
+    login_port: "{{ postgres_port }}"
+    state: present
+
+- name: Ensure the PostgreSQL user is present
+  postgresql_user:
+    name: "{{ postgres_user }}"
+    password: "{{ postgres_userpass }}"
+    login_user: "{{ global_postgres_admin_user  }}"
+    login_password: "{{ global_postgres_admin_pass   }}"
+    login_host: "{{ postgres_host }}"
+    login_port: "{{ postgres_port }}"
+    state: present
+    role_attr_flags: LOGIN
+
+- name: Grant privileges on schema public to the user
+  postgresql_privs:
+    db: "{{ postgres_db }}"
+    type: schema
+    privs: ALL
+    objs: public
+    roles: "{{ postgres_user }}"
+    login_user: "{{ global_postgres_admin_user  }}"
+    login_password: "{{ global_postgres_admin_pass   }}"
+    login_host: "{{ postgres_host }}"
+    login_port: "{{ postgres_port }}"
+
+- name: Grant all privileges on database to the user
+  postgresql_privs:
+    db: "{{ postgres_db }}"
+    type: database
+    privs: ALL
+    objs: "{{ postgres_db }}"
+    roles: "{{ postgres_user }}"
+    login_user: "{{ global_postgres_admin_user  }}"
+    login_password: "{{ global_postgres_admin_pass   }}"
+    login_host: "{{ postgres_host }}"
+    login_port: "{{ postgres_port }}"

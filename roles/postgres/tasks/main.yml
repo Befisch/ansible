@@ -1,0 +1,11 @@
+---
+- name: Install Docker
+  import_tasks: ../../tasks/docker.yml
+
+- name: Create data directory
+  file:
+    path: "{{ psql_postgres_datapath }}"
+    state: directory
+
+- name: Install System Service for Application
+  import_tasks: ../../tasks/docker-service.yml

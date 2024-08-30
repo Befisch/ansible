@@ -1,0 +1,49 @@
+#################################
+# api	Enable/disable the REST API (including HTTP listener)
+api=yes
+
+#################################
+# api-key	Static pre-shared authentication key for access to the REST API
+api-key={{ pdns_api_key }}
+
+#################################
+# local-port	The port on which we listen
+# Auf 54, da der Recursor auf 53 lauscht und nur private Zonen an pdns weiterleitet
+local-port=54
+
+#################################
+# launch	Which backends to launch and order to query them in
+launch=gpgsql
+gpgsql-host={{ pdns_postgres_host }}
+gpgsql-port={{ pdns_postgres_port }}
+gpgsql-dbname={{ pdns_postgres_db }}
+gpgsql-user={{ pdns_postgres_user }}
+gpgsql-password={{ pdns_postgres_userpass }}
+
+#################################
+# master	Act as a primary
+master=yes
+
+#################################
+# primary	Act as a primary
+primary=yes
+
+#################################
+# webserver	Start a webserver for monitoring (api=yes also enables the HTTP listener)
+webserver=yes
+
+#################################
+# webserver-address	IP Address of webserver/API to listen on
+webserver-address=0.0.0.0
+
+#################################
+# webserver-allow-from	Webserver/API access is only allowed from these subnets
+webserver-allow-from=0.0.0.0/0
+
+#################################
+# webserver-password	Password required for accessing the webserver
+webserver-password={{ pdns_api_key }}
+
+#################################
+# webserver-port	Port of webserver/API to listen on
+webserver-port=8081

@@ -1,0 +1,6 @@
+application_main: "{{ global_application_main | default('/opt/psql') }}"
+application_name: postgresql
+service_name: psql-docker
+psql_postgres_password: mypass
+psql_postgres_datapath: /opt/psql/data
+psql_postgres_port: 5432

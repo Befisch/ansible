@@ -1,0 +1,25 @@
+- name: Create application directory
+  file:
+    path: "{{ application_main }}/{{ application_name }}"
+    state: directory
+
+- name: Copy System Service template file
+  template:
+    src: templates/system.service.j2
+    dest: "/etc/systemd/system/{{ service_name }}.service"
+
+- name: Copy Docker Compose template file
+  template:
+    src: templates/docker-compose.yml.j2
+    dest: "{{ application_main }}/{{ application_name }}/docker-compose.yml"
+  notify: Restart {{ service_name }} service
+
+- name: Reload systemd to apply changes
+  systemd:
+    daemon_reload: true
+
+- name: Enable and start Docker Compose service
+  systemd:
+    name: "{{ service_name }}"
+    state: started
+    enabled: true

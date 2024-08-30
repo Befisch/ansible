@@ -1,0 +1,24 @@
+#################################
+# config-dir	Location of configuration directory (recursor.conf)
+#
+config-dir=/etc/powerdns
+
+#################################
+# local-address	IP addresses to listen on, separated by spaces or commas. Also accepts ports.
+#
+local-address=0.0.0.0
+
+#################################
+# local-port	port to listen on
+#
+local-port=53
+
+#################################
+# forward-zones	Zones for which we forward queries, comma separated domain=ip pairs
+#
+forward-zones={{ pdns_forward_zone }}=127.0.0.1:54, {{ pdns_reverse_lookup }}.in-addr.arpa=127.0.0.1:54;8.8.8.8
+
+#################################
+# dnssec	DNSSEC mode: off/process-no-validate/process (default)/log-fail/validate
+# muss off sein, damit an localhost gesendet werden kann
+dnssec=off

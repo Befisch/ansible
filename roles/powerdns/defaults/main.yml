@@ -1,0 +1,12 @@
+application_main: "{{ global_application_main | default('/opt/') }}"
+application_name: PowerDNS
+
+pdns_postgres_userpass: password
+pdns_postgres_user: pda
+pdns_postgres_host: localhost
+pdns_postgres_port: 5432
+pdns_postgres_db: pda
+pdns_api_key: changeMe
+
+pdns_forward_zone: example.net
+pdns_reverse_lookup: 1.168.192
