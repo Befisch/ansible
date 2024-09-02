@@ -1,0 +1,13 @@
+---
+application_main: "{{ global_application_main | default('/opt/psql') }}"
+application_name: gitea
+service_name: gitea-docker
+
+gitea_postgres_userpass: password
+gitea_postgres_user: gitea
+gitea_postgres_host: localhost
+gitea_postgres_port: 5432
+gitea_postgres_db: giteadb
+gitea_ui_port: 3000
+gitea_ssh_port: 2222
+gitea_datapath: /opt/gitea

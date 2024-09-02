@@ -16,3 +16,30 @@
     name: docker
     state: started
     enabled: false
+
+- name: Check if Docker proxy config has been applied
+  stat:
+    path: /lib/systemd/system/docker.service.d/proxy.conf
+  register: docker_proxy_applied
+
+- block:
+    - name: Create Directory for Service Config
+      file:
+        path: "/lib/systemd/system/docker.service.d"
+        state: directory
+
+    - name: Add docker proxy config
+      copy:
+        dest: "/lib/systemd/system/docker.service.d/proxy.conf"
+        content: |
+          [Service]
+          Environment="HTTP_PROXY={{ docker_http_proxy }}"
+          Environment="HTTPS_PROXY={{ docker_https_proxy }}"
+
+    - name: Ensure Docker service is restarted
+      systemd:
+        name: docker
+        state: restarted
+        enabled: false
+
+  when: docker_http_proxy is defined and docker_http_proxy | length > 0 and not docker_proxy_applied.stat.exists

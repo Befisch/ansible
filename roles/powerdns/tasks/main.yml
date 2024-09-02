@@ -19,6 +19,17 @@
     postgres_host: "{{ pdns_postgres_host }}"
     postgres_port: "{{ pdns_postgres_port }}"
 
+- name: Check if table exists
+  become: true
+  postgresql_query:
+    db: "{{ pdns_postgres_db }}"
+    login_user: "{{ pdns_postgres_user  }}"
+    login_password: "{{ pdns_postgres_userpass   }}"
+    login_host: "{{ pdns_postgres_host }}"
+    login_port: "{{ pdns_postgres_port }}"
+    query: "SELECT to_regclass('public.domains');"
+  register: table_exists
+
 - name: Prepare Postgres Database
   postgresql_query:
     db: "{{ pdns_postgres_db }}"
@@ -27,6 +38,7 @@
     login_host: "{{ pdns_postgres_host }}"
     login_port: "{{ pdns_postgres_port }}"
     query: "{{ lookup('file', 'templates/preparedb.sql') }}"
+  when: table_exists.query_result[0].to_regclass is none
 
 - name: Install PowerDNS Server
   apt:

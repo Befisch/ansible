@@ -1,0 +1,9 @@
+haproxy_dashboard_port: 9090
+haproxy_dashboard_user: haproxy
+haproxy_dashboard_password: haproxy
+haproxy_loadbalancer_ip: 0.0.0.0
+haproxy_backend_servers:
+  - name: backend-1
+    ip: 10.11.12.1
+  - name: backend-2
+    ip: 10.11.12.2

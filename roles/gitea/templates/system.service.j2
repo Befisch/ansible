@@ -1,0 +1,13 @@
+[Unit]
+Description={{ application_name }} Docker Compose Service
+Requires=docker.service
+After=docker.service
+
+[Service]
+WorkingDirectory={{ application_main }}/{{ application_name }}
+ExecStart=/usr/bin/docker-compose up
+ExecStop=/usr/bin/docker-compose down
+Restart=always
+
+[Install]
+WantedBy=multi-user.target

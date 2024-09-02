@@ -19,4 +19,6 @@
     - postgres
     - pdnsadmin
     - powerdns
+    - haproxy
+    - gitea
     # - keepalived

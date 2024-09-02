@@ -2,9 +2,34 @@ global_application_main: /opt/company
 global_postgres_admin_user: postgres
 global_loadbalancer_ip: "{{ hostvars['loadbalancer_cpi_01'].ansible_host }}"
 
+# Docker
+docker_http_proxy: "http://10.11.12.13:8080"
+docker_https_proxy: "https://10.11.12.13:8080"
+
 # PostgreSQL
 psql_postgres_datapath: /opt/company/postgres-data
 psql_postgres_port: 15432
+
+# Gitea
+gitea_postgres_user: gitea
+gitea_postgres_host: "{{ global_loadbalancer_ip }}"
+gitea_postgres_port: "{{ psql_postgres_port }}"
+gitea_postgres_db: giteadb
+gitea_ui_port: 3003
+gitea_ssh_port: 2222
+gitea_datapath: /opt/company/gitea-data
+
+# HAProxy
+haproxy_dashboard_port: 9090
+haproxy_dashboard_user: haproxy
+haproxy_loadbalancer_ip: "{{ global_loadbalancer_ip }}"
+haproxy_backend_servers:
+  - name: controlplane-1
+    ip: 10.11.13.1
+  - name: controlplane-2
+    ip: 10.11.13.2
+  - name: controlplane-3
+    ip: 10.11.13.3
 
 # PowerDNS
 pdns_postgres_user: powerdns

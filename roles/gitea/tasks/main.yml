@@ -1,0 +1,30 @@
+---
+- name: Install Docker
+  import_tasks: ../../tasks/docker.yml
+
+- name: Create Postgresql Userdb
+  import_tasks: ../../tasks/postgres-userdb.yml
+  vars:
+    postgres_db: "{{ gitea_postgres_db }}"
+    postgres_user: "{{ gitea_postgres_user }}"
+    postgres_userpass: "{{ gitea_postgres_userpass }}"
+    postgres_host: "{{ gitea_postgres_host }}"
+    postgres_port: "{{ gitea_postgres_port }}"
+
+- name: Create Gitea data directory
+  file:
+    path: "{{ gitea_datapath }}/data"
+    owner: 1000
+    group: 1000
+    state: directory
+
+- name: Create Gitea config directory
+  file:
+    path: "{{ gitea_datapath }}/config"
+    owner: 1000
+    group: 1000
+    state: directory
+
+- name: Install System Service for Application
+  import_tasks: ../../tasks/docker-service.yml
+
