@@ -7,6 +7,7 @@ global
 	user haproxy
 	group haproxy
 	daemon
+  maxconn 4000
 
 	# Default SSL material locations
 	ca-base /etc/ssl/certs
@@ -22,9 +23,14 @@ defaults
 	mode	http
 	option	httplog
 	option	dontlognull
-        timeout connect 5000
-        timeout client  50000
-        timeout server  50000
+  retries                 3
+  timeout http-request    10s
+  timeout queue           1m
+  timeout connect         10s
+  timeout client          1m
+  timeout server          1m
+  timeout http-keep-alive 10s
+  timeout check           10s
 	errorfile 400 /etc/haproxy/errors/400.http
 	errorfile 403 /etc/haproxy/errors/403.http
 	errorfile 408 /etc/haproxy/errors/408.http
@@ -32,15 +38,7 @@ defaults
 	errorfile 502 /etc/haproxy/errors/502.http
 	errorfile 503 /etc/haproxy/errors/503.http
 	errorfile 504 /etc/haproxy/errors/504.http
-
-global
-    log stdout format raw local0
-    maxconn 1000
-defaults
-    mode  tcp
-    timeout connect 30s
-    timeout client 60s
-    timeout server 60s
+  maxconn 3000
 
 #---------------------------------------------------------------------
 # Monitoring Configuration
@@ -51,18 +49,18 @@ listen stats
   stats enable
   stats refresh 10s
   stats auth {{haproxy_dashboard_user}}:{{haproxy_dashboard_password}}
-  stats uri  /stats
+  stats uri /stats
 
-frontend openshift-control-plane
-  bind {{ haproxy_loadbalancer_ip }}:6443
+{% for listener in haproxy_listener.values() %}
+listen {{ listener[0].name }}
+  bind *:{{ listener[0].bindport }}
   mode tcp
-  option tcplog
-  default_backend openshift-control-plane
-
-backend openshift-control-plane
-  mode tcp
-  balance roundrobin
-  option tcp-check
-  {% for server in haproxy_backend_servers %}
-  server {{ server.name }} {{ server.ip }}:6443 check
-  {% endfor %}
+{% if listener[0].options is defined %}
+{% for option in listener[0].options %}
+  option {{ option }}
+{% endfor %}
+{% endif %}
+{% for backend in listener[0].backends %}
+  server {{ backend.shortname }} {{ backend.dns }}:{{ listener[0].bindport }} {{ backend.args }}
+{% endfor %} 
+{% endfor %}

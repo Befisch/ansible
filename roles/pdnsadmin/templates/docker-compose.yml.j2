@@ -6,6 +6,10 @@ services:
     container_name: pda
     environment:
       SQLALCHEMY_DATABASE_URI: postgresql://{{ pdnsa_postgres_user }}:{{ pdnsa_postgres_userpass }}@{{ pdnsa_postgres_host }}:{{ pdnsa_postgres_port }}/{{ pdnsa_postgres_db }}
+      {% if docker_no_proxy is defined %}
+      NO_PROXY: {{ docker_no_proxy }}
+      no_proxy: {{ docker_no_proxy }}
+      {% endif %}
     ports:
       - "{{ pdnsa_ui_port }}:80"  # Ersetze 5432 mit einem anderen Port, wenn nötig
     networks:

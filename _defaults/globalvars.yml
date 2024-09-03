@@ -1,0 +1,112 @@
+global_application_main: /opt/company
+global_postgres_admin_user: postgres
+global_loadbalancer_ip: "{{ hostvars['loadbalancer_cpi_01'].ansible_host }}"
+
+# Docker
+docker_http_proxy: "http://10.11.12.13:8080"
+docker_https_proxy: "https://10.11.12.13:8080"
+docker_no_proxy: "localhost,127.0.0.1"
+
+# PostgreSQL
+psql_postgres_datapath: /opt/company/postgres-data
+psql_postgres_port: 15432
+
+# Gitea
+gitea_postgres_user: gitea
+gitea_postgres_host: "{{ global_loadbalancer_ip }}"
+gitea_postgres_port: "{{ psql_postgres_port }}"
+gitea_postgres_db: giteadb
+gitea_ui_port: 3003
+gitea_ssh_port: 2222
+gitea_datapath: /opt/company/gitea-data
+
+# HAProxy
+haproxy_dashboard_port: 9090
+haproxy_dashboard_user: haproxy
+haproxy_loadbalancer_ip: "{{ global_loadbalancer_ip }}"
+haproxy_listener:
+  api:
+    - name: api
+      bindport: 6443
+      balance: roundrobin
+      options:
+      - httpchk GET /readyz HTTP/1.0
+      - log-health-checks
+      backends:
+      - shortname: ctrl1
+        dns: ctrl1.os.net
+        args: "weight 1 verify none check check-ssl inter 10s fall 2 rise 3"
+      - shortname: ctrl2
+        dns: ctrl2.os.net
+        args: "weight 1 verify none check check-ssl inter 10s fall 2 rise 3"
+      - shortname: bootstrap
+        dns: bootstrap.os.net
+        args: "verify none check check-ssl inter 10s fall 2 rise 3 backup"
+  http:
+    - name: http-ingress
+      bindport: 80
+      balance: source
+      backends:
+      - shortname: worker1
+        dns: worker1.os.net
+        args: "check inter 1s"
+      - shortname: worker2
+        dns: worker2.os.net
+        args: "check inter 1s"
+  https:
+    - name: https-ingress
+      bindport: 443
+      balance: source
+      backends:
+      - shortname: worker1
+        dns: worker1.os.net
+        args: "check inter 1s"
+      - shortname: worker2
+        dns: worker2.os.net
+        args: "check inter 1s"
+  configserver:
+    - name: config-server
+      bindport: 22623
+      balance: source
+      backends:
+      - shortname: worker1
+        dns: worker1.os.net
+        args: "check inter 1s"
+      - shortname: worker2
+        dns: worker2.os.net
+        args: "check inter 1s"
+      - shortname: bootstrap
+        dns: bootstrap.os.net
+        args: "check inter 1s backup"
+
+
+# PowerDNS
+pdns_postgres_user: powerdns
+pdns_postgres_host: "{{ global_loadbalancer_ip }}"
+pdns_postgres_port: "{{ psql_postgres_port }}"
+pdns_postgres_db: powerdns
+pdns_forward_zone: example.net
+pdns_reverse_lookup: 64.168.192
+pdns_zone_entries:
+  - zonename: "{{ pdns_forward_zone }}"
+    entries:
+    - "host1,A,123.123.123.1"
+    - "host2,CNAME,host1"
+    - "host3,A,123.123.123.99"
+  - zonename: blabla.ext
+    entries:
+    - "host1,A,123.123.123.1"
+    - "host2,CNAME,host1"
+    - "host3,A,123.123.123.99"
+
+pdns_ptr_entries:
+  - zone: "{{ pdns_reverse_lookup }}.in-addr.arpa"
+    entries:
+    - "13,PTR,api"
+    - "32,PTR,worker"
+
+# PowerDNS Admin UI
+pdnsa_postgres_user: pda
+pdnsa_postgres_host: "{{ global_loadbalancer_ip }}"
+pdnsa_postgres_port: "{{ psql_postgres_port }}"
+pdnsa_postgres_db: pdnsadmin

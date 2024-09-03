@@ -3,7 +3,7 @@
   become: true
   vars_files:
     - vars/globalvars.yml
-    - vault.yml
+    - vars/vault.yml
   pre_tasks:
     - name: Install required packages
       apt:

@@ -70,4 +70,11 @@
     dest: "/etc/powerdns/recursor.conf"
   notify: Restart PowerDNS Recursor service
 
-
+- name: Add DNS records for each zone
+  shell: |
+    pdnsutil add-record {{ item.0.zonename }} {{ entry_parts[0] }} {{ entry_parts[1] }} {{ entry_parts[2] }}
+  loop: "{{ pdns_zone_entries | subelements('entries') }}"
+  vars:
+    entry_parts: "{{ item.1.split(',') }}"
+  when: item.1 is defined
+  become: true  # falls pdnsutil Root-Rechte benötigt
