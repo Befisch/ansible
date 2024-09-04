@@ -1,0 +1,27 @@
+---
+- name: Install Docker
+  import_tasks: ../../tasks/docker.yml
+
+- name: Create images directory
+  file:
+    path: "{{ registry_datapath }}/images"
+    state: directory
+
+- name: Create auth directory
+  file:
+    path: "{{ registry_datapath }}/auth"
+    state: directory
+
+- name: Generate hashed password for docker registry auth
+  htpasswd:
+    path: "{{ registry_datapath }}/auth/htpasswd"
+    name: "{{registry_username}}"
+    password: "{{registry_password}}"
+    hash_scheme: bcrypt
+    owner: root
+    group: root
+    mode: 0644
+
+- name: Install System Service for Application
+  import_tasks: ../../tasks/docker-service.yml
+

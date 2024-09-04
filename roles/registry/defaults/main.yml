@@ -1,0 +1,9 @@
+---
+application_main: "{{ global_application_main | default('/opt/psql') }}"
+application_name: registry
+service_name: registry
+
+registry_username: admin
+registry_password: password
+registry_port: 5000
+registry_datapath: /opt/registry/

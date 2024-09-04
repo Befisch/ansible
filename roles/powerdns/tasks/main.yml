@@ -70,11 +70,59 @@
     dest: "/etc/powerdns/recursor.conf"
   notify: Restart PowerDNS Recursor service
 
+- name: Create DNS Zones
+  shell: |
+    if ! pdnsutil list-zone {{ item.zonename }} > /dev/null 2>&1; then
+      pdnsutil create-zone {{ item.zonename }};
+    else
+      echo "Zone {{ item.zonename }} already exists."
+    fi
+  loop: "{{ pdns_zone_entries }}"
+  become: true
+  register: zone_result
+  changed_when: "'Creating empty zone' in zone_result.stderr"
+  failed_when: false
+
+- name: Create Reverse DNS Zones
+  shell: |
+    if ! pdnsutil list-zone {{ item.zonename }} > /dev/null 2>&1; then
+      pdnsutil create-zone {{ item.zonename }};
+    else
+      echo "Zone {{ item.zonename }} already exists."
+    fi
+  loop: "{{ pdns_reverse_entries }}"
+  become: true
+  register: zone_result
+  changed_when: "'Creating empty zone' in zone_result.stderr"
+  failed_when: false
+
 - name: Add DNS records for each zone
   shell: |
-    pdnsutil add-record {{ item.0.zonename }} {{ entry_parts[0] }} {{ entry_parts[1] }} {{ entry_parts[2] }}
+    if ! pdnsutil list-zone {{ item.0.zonename }} | grep "{{ entry_parts[0] }}.{{ item.0.zonename }}" > /dev/null 2>&1; then
+      pdnsutil add-record {{ item.0.zonename }} {{ entry_parts[0] }} {{ entry_parts[1] }} {{ entry_parts[2] }}
+    else
+      echo "Record "{{ entry_parts[0] }}.{{ item.0.zonename }}" already exists."
+    fi
   loop: "{{ pdns_zone_entries | subelements('entries') }}"
   vars:
     entry_parts: "{{ item.1.split(',') }}"
   when: item.1 is defined
-  become: true  # falls pdnsutil Root-Rechte benötigt
+  become: true
+  register: record_result
+  changed_when: "'New rrset:' in record_result.stdout"
+
+- name: Add DNS records for each reverse zone
+  shell: |
+    if ! pdnsutil list-zone {{ item.0.zonename }} | grep "{{ entry_parts[0] }}.{{ item.0.zonename }}" > /dev/null 2>&1; then
+      pdnsutil add-record {{ item.0.zonename }} {{ entry_parts[0] }} {{ entry_parts[1] }} {{ entry_parts[2] }}
+    else
+      echo "Record "{{ entry_parts[0] }}.{{ item.0.zonename }}" already exists."
+    fi
+  loop: "{{ pdns_reverse_entries | subelements('entries') }}"
+  vars:
+    entry_parts: "{{ item.1.split(',') }}"
+  when: item.1 is defined
+  become: true
+  register: record_result
+  changed_when: "'New rrset:' in record_result.stdout"
+

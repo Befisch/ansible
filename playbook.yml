@@ -10,15 +10,17 @@
         name: "{{ item }}"
         state: present
         update_cache: false  
-      with_items:
+      loop:
         - acl
         - postgresql-client
         - python3-psycopg2
+        - python3-passlib
 
   roles:
     - postgres
     - pdnsadmin
     - powerdns
+    # - keepalived
     - haproxy
     - gitea
-    # - keepalived
+    - registry

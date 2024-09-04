@@ -5,3 +5,4 @@ global_postgres_admin_pass: "{{ psql_postgres_password }}"
 pdns_api_key: superSecureAPIKey
 haproxy_dashboard_password: haproxy
 gitea_postgres_userpass: password
+registry_password: password123

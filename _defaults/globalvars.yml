@@ -99,8 +99,8 @@ pdns_zone_entries:
     - "host2,CNAME,host1"
     - "host3,A,123.123.123.99"
 
-pdns_ptr_entries:
-  - zone: "{{ pdns_reverse_lookup }}.in-addr.arpa"
+pdns_reverse_entries:
+  - zonename: "{{ pdns_reverse_lookup }}.in-addr.arpa"
     entries:
     - "13,PTR,api"
     - "32,PTR,worker"
@@ -110,3 +110,8 @@ pdnsa_postgres_user: pda
 pdnsa_postgres_host: "{{ global_loadbalancer_ip }}"
 pdnsa_postgres_port: "{{ psql_postgres_port }}"
 pdnsa_postgres_db: pdnsadmin
+
+# Registry v2
+registry_username: admin
+registry_port: 5000
+registry_datapath: /opt/company/registry
