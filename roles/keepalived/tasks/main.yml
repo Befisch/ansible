@@ -1,0 +1,19 @@
+---
+- name: Install HAProxy
+  apt:
+    name: keepalived
+    state: present
+
+- name: Create system user for keepalived script execution
+  user:
+    name: keepalived_script
+    shell: /bin/false
+    system: yes
+    create_home: no
+    state: present
+
+- name: Copy Configuration Files
+  template:
+    src: templates/keepalived.conf.j2
+    dest: "/etc/keepalived/keepalived.conf"
+  notify: Restart keepalived service

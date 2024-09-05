@@ -1,0 +1,28 @@
+vrrp_script check_haproxy {
+    script "{{keepalived_haproxy_check.script}}"
+    interval {{keepalived_haproxy_check.interval}}
+    weight {{keepalived_haproxy_check.weight}}
+}
+
+{% for vrrp_instance in vrrp_instances %}
+vrrp_instance {{vrrp_instance.vrrp_instance_name}} {
+    interface {{ vrrp_instance.vrrp_ip_interface }}
+    state {{ vrrp_state }}
+    priority {{ vrrp_instance.vrrp_priority }}
+    virtual_router_id {{ vrrp_instance.virtual_router_id }}
+
+    authentication {
+        auth_type {{ keepalived_vrrp_auth }}
+        auth_pass {{ vrrp_instance.auth_password }}
+    }
+
+    virtual_ipaddress {
+    {{vrrp_instance.virtual_ipaddress}}
+    }
+
+    track_script {
+        check_haproxy
+    }
+}
+
+{% endfor %}

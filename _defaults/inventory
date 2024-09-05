@@ -1,5 +1,5 @@
 [loadbalancer]
-loadbalancer_cpi_01 ansible_host=192.168.64.3
+loadbalancer_cpi_01 ansible_host=192.168.64.3 vrrp_state=MASTER
 
 [loadbalancer_master]
 loadbalancer_cpi_01 ansible_host=192.168.64.3

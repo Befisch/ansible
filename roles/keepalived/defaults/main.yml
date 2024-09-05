@@ -1,0 +1,16 @@
+---
+keepalived_vrrp_auth: PASS
+keepalived_haproxy_check:
+  script: "/usr/bin/killall -0 haproxy"
+  interval: 2
+  weight: 2
+
+vrrp_instances:
+  - vrrp_instance_name: vip1
+    virtual_ipaddress: "84.106.57.166/27"
+    virtual_router_id: "56"
+    auth_password: "141a653b895287bf9"
+    vrrp_ip_interface: enp0s1 # Das Naming sollte auf allen Maschinen gleich sein.
+    vrrp_priority: 101
+
+# vrrp_state wird im inventory fuer den Host festgelegt.

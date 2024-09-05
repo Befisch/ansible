@@ -20,6 +20,21 @@ gitea_ui_port: 3003
 gitea_ssh_port: 2222
 gitea_datapath: /opt/company/gitea-data
 
+# Keepalived
+keepalived_vrrp_auth: PASS
+keepalived_haproxy_check:
+  script: "/usr/bin/killall -0 haproxy"
+  interval: 2
+  weight: 2
+
+vrrp_instances:
+  - vrrp_instance_name: ubuntuvip
+    virtual_ipaddress: "192.168.64.13/24"
+    virtual_router_id: "56"
+    auth_password: "141a653b895287bf9"
+    vrrp_ip_interface: enp0s1 # Das Naming sollte auf allen Maschinen gleich sein.
+    vrrp_priority: 101
+
 # HAProxy
 haproxy_dashboard_port: 9090
 haproxy_dashboard_user: haproxy
