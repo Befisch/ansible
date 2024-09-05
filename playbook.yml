@@ -17,10 +17,10 @@
         - python3-passlib
 
   roles:
-    # - postgres
-    # - pdnsadmin
-    # - powerdns
+    - postgres
+    - pdnsadmin
+    - powerdns
     - keepalived
-    # - haproxy
-    # - gitea
-    # - registry
+    - haproxy
+    - gitea
+    - registry
